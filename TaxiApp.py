@@ -2,19 +2,29 @@
 import simpy
 import statistics
 import random
+import matplotlib.pyplot as plt
 
 #passenger
-def passenger(env, name, taxi_pool, ride_time_mean, wait_times, queue_lengths, busy_times):
+def passenger(env, name, driver_pool, ride_time_mean, reposition_mean, wait_times, 
+              queue_at_arrivals, total_busy_time):
     arrival_time = env.now
-    with taxi_pool.request() as req:
+    queue_at_arrival = len(driver_pool.queue)           #length of queue at arrival
+    queue_at_arrivals.append(queue_at_arrival)
+
+    with driver_pool.request() as req:
         yield req           #waiting for a taxi
         wait_time = env.now - arrival_time
         wait_times.append(wait_time)
 
-        queue_lengths.append(len(taxi_pool.queue))      #recording queue length before getting a taxi
-
-        ride_time = random.expovariate(1.0/ride_time_mean);
+        #driver assigned - simulation of ride
+        ride_time = random.expovariate(1.0/ ride_time_mean);
         yield env.timeout(ride_time)
+        total_busy_time[0] += ride_time         #accumulating busy time
+
+        #reposition the driver after the trip
+        reposition_time = random.expovariate(1.0/ ride_time_mean)
+        yield env.timeout(reposition_time)
+        total_busy_time[0] += reposition_time
 
 #driver
 def driver(env, name, driver_pool):
