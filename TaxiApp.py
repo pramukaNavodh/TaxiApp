@@ -48,7 +48,7 @@ def system(env, arrival_rate, num_drivers, ride_time_mean, reposition_mean, sim_
         yield env.timeout(inter_arrival)
         if env.now >= sim_duration:
             break
-        env.process(rider(env, f'Rider-{len(wait_time)+1}', driver_pool,ride_time_mean,reposition_mean,
+        env.process(rider(env, f'Rider-{len(wait_times)+1}', driver_pool,ride_time_mean,reposition_mean,
                           wait_times, queue_at_arrivals, total_busy_time))
         
     #calculatiion of metrics
@@ -67,3 +67,20 @@ def system(env, arrival_rate, num_drivers, ride_time_mean, reposition_mean, sim_
         'total_busy_time' : total_busy_time[0]
 
     }
+
+
+def simulation (arrival_rate, num_drivers,ride_time_mean = 15, reposition_mean = 2,
+                sim_duration = 480, seed = 42):
+    random.seed(seed)
+    env = simpy.Environment()
+
+    def sim_gen():
+        yield from system(env, arrival_rate,num_drivers,ride_time_mean,reposition_mean,sim_duration)
+    results = env.run(until=sim_duration, generator = sim_gen)
+    return results;
+
+
+#case 1
+if __name__ == "__main__":
+    results = run_simulation(arrival_rate=2.0, num_drivers=5, ride_time_mean=15, sim_duration=480)
+    print(results)
