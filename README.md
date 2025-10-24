@@ -5,4 +5,4 @@ Install libraries
 > > > pip install simpy
 > > > pip install matplotlib
 
-run TaxiApp.py
+run >> python TaxiApp.py
