@@ -89,21 +89,24 @@ def run_simulation (arrival_rate, num_drivers,ride_time_mean = 15, reposition_me
     # results = env.run(until=sim_duration, generator = sim_gen)
     # return results;
 
-driver_counts = [10, 25, 50, 75, 120, 300 ]
+driver_counts = [1, 5, 10, 15, 25, 27 ]
 utilizations =[]
+avg_wait_times = []
+throughputs = []
 
-
-#case 1
+#case 3
 if __name__ == "__main__":
-    results = run_simulation(arrival_rate=0.5, num_drivers=5, ride_time_mean=15, sim_duration=480)
+    results = run_simulation(arrival_rate=0.5, num_drivers=7, ride_time_mean=10, sim_duration=480)
     print("Simulation results - ")
     for k, v in results.items():
         if isinstance(v, (float, int)):
             print(f"{k}: {v:.2f}")
 
 for d in driver_counts:
-    res = run_simulation(arrival_rate=0.5,num_drivers=d,ride_time_mean=15, sim_duration=480)
+    res = run_simulation(arrival_rate=1,num_drivers=d,ride_time_mean=7, sim_duration=480)
     utilizations.append(res['utilization'])
+    avg_wait_times.append(res['avg_wait_time'])
+    throughputs.append(res['throughput'])
 
 
 #visualization
@@ -128,4 +131,22 @@ plt.plot(driver_counts,utilizations,marker='o')
 plt.xlabel("Number of drivers")
 plt.ylabel("utilization (%)")
 plt.title("Utilization vs Number of Drivers")
+plt.show()
+
+#wait time vs drivers num
+plt.figure()
+plt.plot(driver_counts, avg_wait_times, marker='o')
+plt.xlabel("Number of Drivers")
+plt.ylabel("Average Wait Time (minutes)")
+plt.title("Average Wait Time vs Number of Drivers")
+plt.grid(True)
+plt.show()
+
+# num of drivers vs completed trips
+plt.figure()
+plt.plot(driver_counts, throughputs, marker='s')
+plt.xlabel("Number of Drivers")
+plt.ylabel("Throughput (completed trips)")
+plt.title("Throughput vs Number of Drivers")
+plt.grid(True)
 plt.show()
